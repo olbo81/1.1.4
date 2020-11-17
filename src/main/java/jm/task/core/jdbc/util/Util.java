@@ -1,8 +1,17 @@
 package jm.task.core.jdbc.util;
-
+import jm.task.core.jdbc.model.User;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.cfg.Environment;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+
 
 
 public class Util {
@@ -22,6 +31,109 @@ public class Util {
         }
         return connection;
     }
+
+    private static StandardServiceRegistry registry;
+    private static SessionFactory sessionFactory;
+
+    public static SessionFactory getSessionFactory() {
+        if (sessionFactory == null) {
+            try {
+                StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
+
+                //Configuration properties
+                Map<String, Object> settings = new HashMap<>();
+                settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
+                settings.put(Environment.URL, "jdbc:mysql://localhost:3306/my_schema?serverTimezone=Asia/Yekaterinburg&useSSL=false");
+                settings.put(Environment.USER, "root");
+                settings.put(Environment.PASS, "root");
+                //settings.put(Environment.HBM2DDL_AUTO, true);
+                settings.put(Environment.SHOW_SQL, true);
+                settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
+
+                registryBuilder.applySettings(settings);
+                registry = registryBuilder.build();
+
+                MetadataSources sources = new MetadataSources(registry);
+                sources.addAnnotatedClass(User.class);
+                Metadata metadata = sources.getMetadataBuilder().build();
+
+                sessionFactory = metadata.getSessionFactoryBuilder().build();
+            } catch (Exception e) {
+                if (registry != null) {
+                    StandardServiceRegistryBuilder.destroy(registry);
+                }
+                e.printStackTrace();
+            }
+        }
+        return sessionFactory;
+    }
+
+    public static void shutdown() {
+        if (registry != null) {
+            StandardServiceRegistryBuilder.destroy(registry);
+        }
+    }
 }
+
+
+
+    // Hiber
+
+   // private static SessionFactory sessionFactory;
+
+    /*public static SessionFactory getSessionFactory() {
+
+        Properties configuration = new Properties();
+        configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
+        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/my_schema?serverTimezone=Asia/Yekaterinburg&useSSL=false");
+        configuration.setProperty("hibernate.connection.username", "root");
+        configuration.setProperty("hibernate.connection.password", "root");
+        configuration.setProperty("hibernate.show_sql", "false");
+        configuration.setProperty("hibernate.hbm2ddl.auto", "validate");
+
+        Configuration cfg = new Configuration();
+        cfg.setProperties(configuration);
+        cfg.addAnnotatedClass(User.class);
+        SessionFactory factory = cfg.buildSessionFactory();
+        return factory;
+    }
+}*/
+    /*private static SessionFactory sessionFactory;
+
+    public static SessionFactory getSessionFactory() {
+        if (sessionFactory == null) {
+            sessionFactory = createSessionFactory();
+        }
+        return sessionFactory;
+    }
+
+    //@SuppressWarnings("UnusedDeclaration")
+    private static Configuration getMySqlConfiguration() {
+        Configuration configuration = new Configuration();
+        configuration.addAnnotatedClass(User.class);
+
+        configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        configuration.setProperty("hibernate.connection.driver_class", "com.mysql.cj.jdbc.Driver");
+        configuration.setProperty("hibernate.connection.url", "jdbc:mysql://localhost:3306/my_shema?serverTimezone=Asia/Yekaterinburg&useSSL=false");
+        configuration.setProperty("hibernate.connection.username", "root");
+        configuration.setProperty("hibernate.connection.password", "root");
+        configuration.setProperty("hibernate.show_sql", "false");
+        configuration.setProperty("hibernate.hbm2ddl.auto", "validate");
+
+        return configuration;
+    }
+
+    private static SessionFactory createSessionFactory() {
+        Configuration configuration = getMySqlConfiguration();
+        StandardServiceRegistryBuilder builder = new StandardServiceRegistryBuilder();
+        builder.applySettings(configuration.getProperties());
+        ServiceRegistry serviceRegistry = builder.build();
+        return configuration.buildSessionFactory(serviceRegistry);
+    }*/
+
+
+
+
 
 
