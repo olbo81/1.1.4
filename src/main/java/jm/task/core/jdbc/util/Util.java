@@ -1,4 +1,5 @@
 package jm.task.core.jdbc.util;
+
 import jm.task.core.jdbc.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistry;
@@ -36,7 +37,6 @@ public class Util {
     }
 
     //private static StandardServiceRegistry registry;
-    //private static SessionFactory sessionFactory;
 
     private static SessionFactory sessionFactory;
 
@@ -52,12 +52,8 @@ public class Util {
                 settings.put(Environment.USER, "root");
                 settings.put(Environment.PASS, "root");
                 settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
-
                 settings.put(Environment.SHOW_SQL, "false");
 
-                //settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
-
-                //settings.put(Environment.HBM2DDL_AUTO, "create");
 
                 configuration.setProperties(settings);
 
@@ -74,7 +70,6 @@ public class Util {
         return sessionFactory;
     }
 }
-
 
         /*public static void shutdown () {
             if (serviceRegistry != null) {
@@ -124,11 +119,9 @@ public class Util {
     }*/
 
 
+// Hiber
 
-
-    // Hiber
-
-   // private static SessionFactory sessionFactory;
+// private static SessionFactory sessionFactory;
 
     /*public static SessionFactory getSessionFactory() {
 
