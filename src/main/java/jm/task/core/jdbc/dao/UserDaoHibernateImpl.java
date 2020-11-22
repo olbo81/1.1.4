@@ -6,7 +6,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
-import java.sql.SQLException;
 import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
@@ -73,8 +72,11 @@ public class UserDaoHibernateImpl implements UserDao {
         Transaction removeUser = null;
         try (Session session = Util.getSessionFactory().openSession()) {
             removeUser = session.beginTransaction();
-            Query query = session.createQuery("DELETE FROM User WHERE id = :Id");
-            query.setParameter("Id", id);
+            User userDel = session.get(User.class, id);
+            if (userDel != null) {
+                session.remove(userDel);
+                System.out.printf("User %d is removed", id);
+            }
             session.getTransaction().commit();
         } catch (Exception e) {
             if (removeUser != null) {
